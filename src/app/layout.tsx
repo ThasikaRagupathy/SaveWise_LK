@@ -7,26 +7,22 @@ export const metadata: Metadata = {
     default: `${APP_METADATA.name} — Student Savings & Budgeting`,
     template: `%s | ${APP_METADATA.name}`,
   },
-  description: `${APP_METADATA.description} Owned and crafted by ${APP_METADATA.owner}.`,
-  authors: [{ name: APP_METADATA.owner }],
-  creator: APP_METADATA.owner,
+  description: APP_METADATA.description,
   keywords: [
     "SaveWise LK",
     "Sri Lanka student finance",
     "budgeting app Sri Lanka",
     "student savings tracker",
     "LKR finance",
-    "Thasika Ragupathy",
   ],
   icons: {
-    icon: "/favicon.ico",
+    icon: "/savewise-mark.svg",
   },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#176B4D" },
     { media: "(prefers-color-scheme: dark)", color: "#0C1411" },
@@ -60,7 +56,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-surface-light dark:bg-surface-dark text-charcoal dark:text-charcoal-dark selection:bg-brand-500/20 selection:text-brand-700">
+      <body className="min-h-dvh bg-surface-light dark:bg-surface-dark text-charcoal dark:text-charcoal-dark selection:bg-brand-500/20 selection:text-brand-700">
         {children}
       </body>
     </html>

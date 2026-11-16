@@ -1,15 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Sparkles,
-  ShieldCheck,
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
-  Wallet,
   PieChart,
   Target,
 } from "lucide-react";
@@ -19,7 +16,9 @@ import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { useAppStore } from "@/store/appStore";
 import { APP_METADATA, EXPENSE_CATEGORIES, GOAL_CATEGORIES } from "@/lib/constants";
+import { EducationLevel } from "@/types";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { BrandMark } from "@/components/brand/BrandMark";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -29,33 +28,55 @@ export default function OnboardingPage() {
     upsertBudget,
     addGoal,
     selectedMonth,
+    hasHydrated,
+    isLoggedIn,
   } = useAppStore();
 
   const [step, setStep] = useState(1);
-
-  // Step 1: Student info
-  const [displayName, setDisplayName] = useState(profile.displayName || "Nila");
-  const [university, setUniversity] = useState(profile.university || APP_METADATA.universityOptions[0]);
-
-  // Step 2: Income / Allowance
+  const [displayName, setDisplayName] = useState(profile.displayName || "");
+  const [educationLevel, setEducationLevel] = useState<EducationLevel | "">(
+    profile.educationLevel ||
+      (profile.institutionName || profile.university ? "university" : "")
+  );
+  const [institutionName, setInstitutionName] = useState(
+    profile.institutionName || profile.university || ""
+  );
   const [incomeType, setIncomeType] = useState<"fixed" | "irregular" | "skip">("fixed");
-  const [incomeEstimate, setIncomeEstimate] = useState("35000");
-
-  // Step 3: Initial category budget
+  const [incomeEstimate, setIncomeEstimate] = useState("");
   const [budgetCategory, setBudgetCategory] = useState("Food & Groceries");
-  const [budgetLimit, setBudgetLimit] = useState("12000");
+  const [budgetLimit, setBudgetLimit] = useState("");
+  const [goalTitle, setGoalTitle] = useState("");
+  const [goalTarget, setGoalTarget] = useState("");
+  const [goalCategory, setGoalCategory] = useState("Personal");
 
-  // Step 4: First savings goal
-  const [goalTitle, setGoalTitle] = useState("Dell Coding Laptop");
-  const [goalTarget, setGoalTarget] = useState("150000");
-  const [goalCategory, setGoalCategory] = useState("Tech & Devices");
+  useEffect(() => {
+    if (hasHydrated && !isLoggedIn) {
+      router.replace("/register");
+    }
+  }, [hasHydrated, isLoggedIn, router]);
+
+  if (!hasHydrated || !isLoggedIn) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center bg-surface-light dark:bg-surface-dark">
+        <p className="text-sm font-medium text-charcoal-muted dark:text-charcoal-darkMuted">
+          Loading your profile...
+        </p>
+      </div>
+    );
+  }
 
   const handleFinish = () => {
     // Save profile updates
     updateProfile({
-      displayName,
-      university,
-      monthlyIncomeEstimate: incomeType === "fixed" ? parseFloat(incomeEstimate) || 0 : undefined,
+      displayName: displayName.trim(),
+      educationLevel: educationLevel || undefined,
+      institutionName: institutionName.trim() || undefined,
+      university: educationLevel === "university" ? institutionName : undefined,
+      faculty: undefined,
+      monthlyIncomeEstimate:
+        incomeType === "fixed" && incomeEstimate.trim()
+          ? parseFloat(incomeEstimate) || undefined
+          : undefined,
       onboardingCompleted: true,
     });
 
@@ -81,13 +102,11 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-surface-light dark:bg-surface-dark px-4 py-8">
+    <div className="min-h-dvh flex flex-col justify-between bg-surface-light dark:bg-surface-dark px-4 py-8">
       {/* Top Header */}
       <div className="max-w-xl w-full mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold">
-            <Sparkles className="w-4 h-4 text-emerald-200" />
-          </div>
+          <BrandMark className="w-8 h-8 shrink-0" />
           <span className="font-extrabold text-base text-charcoal dark:text-charcoal-dark">
             SaveWise LK
           </span>
@@ -123,30 +142,56 @@ export default function OnboardingPage() {
                   Welcome to SaveWise LK! 👋
                 </h3>
                 <p className="text-xs sm:text-sm text-charcoal-muted dark:text-charcoal-darkMuted mt-1">
-                  Let’s configure your personal student finances in Sri Lankan Rupees.
+                  Set up your profile, whether you are in school, university, or learning independently.
                 </p>
               </div>
 
               <div className="space-y-4">
                 <Input
                   label="What should we call you?"
-                  placeholder="e.g. Nila, Kasun, Thasika"
+                  placeholder="Your name"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   required
                 />
 
                 <Select
-                  label="University / Higher Education Institution"
-                  value={university}
-                  onChange={(e) => setUniversity(e.target.value)}
+                  label="Education level"
+                  value={educationLevel}
+                  onChange={(e) => {
+                    const nextLevel = e.target.value as EducationLevel | "";
+                    if (nextLevel !== educationLevel) setInstitutionName("");
+                    setEducationLevel(nextLevel);
+                  }}
                 >
-                  {APP_METADATA.universityOptions.map((uni) => (
-                    <option key={uni} value={uni}>
-                      {uni}
+                  <option value="">Select an option</option>
+                  {APP_METADATA.educationLevels.map((level) => (
+                    <option key={level.id} value={level.id}>
+                      {level.label}
                     </option>
                   ))}
                 </Select>
+
+                {educationLevel === "university" ? (
+                  <Select
+                    label="University / institute"
+                    value={institutionName}
+                    onChange={(e) => setInstitutionName(e.target.value)}
+                  >
+                    <option value="">Select a university or institute</option>
+                    {APP_METADATA.universityOptions.map((universityOption) => (
+                      <option key={universityOption} value={universityOption}>
+                        {universityOption}
+                      </option>
+                    ))}
+                  </Select>
+                ) : (
+                  <Input
+                    label={educationLevel === "school" ? "School name" : "School or institution"}
+                    value={institutionName}
+                    onChange={(e) => setInstitutionName(e.target.value)}
+                  />
+                )}
               </div>
 
               <div className="pt-2 flex justify-end">
@@ -169,14 +214,14 @@ export default function OnboardingPage() {
                   Estimated Monthly Inflow
                 </h3>
                 <p className="text-xs sm:text-sm text-charcoal-muted dark:text-charcoal-darkMuted mt-1">
-                  University income can vary. Choose the option that fits your situation best.
+                  Pocket money, allowances, and other income can vary. Choose what fits best.
                 </p>
               </div>
 
               {/* Mode Selection */}
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {[
-                  { id: "fixed", label: "Monthly Allowance" },
+                  { id: "fixed", label: "Allowance / Pocket Money" },
                   { id: "irregular", label: "Gigs / Irregular" },
                   { id: "skip", label: "Not Sure Yet" },
                 ].map((item) => (
@@ -197,7 +242,7 @@ export default function OnboardingPage() {
 
               {incomeType === "fixed" && (
                 <Input
-                  label="Typical Monthly Total (Family, Jobs, Bursaries in LKR)"
+                  label="Typical Monthly Total (pocket money, work, or grants)"
                   type="number"
                   prefixElement={<span className="text-xs font-bold font-mono">Rs.</span>}
                   value={incomeEstimate}
@@ -280,14 +325,14 @@ export default function OnboardingPage() {
                   Create a Milestone Goal
                 </h3>
                 <p className="text-xs sm:text-sm text-charcoal-muted dark:text-charcoal-darkMuted mt-1">
-                  What are you striving to achieve or purchase during your university journey?
+                  What are you saving for? Choose anything that matters to you.
                 </p>
               </div>
 
               <div className="space-y-4">
                 <Input
                   label="Goal Name"
-                  placeholder="e.g. Dev Laptop, Exam Certification, Semester Trip"
+                  placeholder="e.g. Books, school supplies, a device, or a trip"
                   value={goalTitle}
                   onChange={(e) => setGoalTitle(e.target.value)}
                 />
@@ -327,10 +372,8 @@ export default function OnboardingPage() {
           )}
         </Card>
 
-        {/* Ownership */}
-        <div className="text-center text-[11px] text-charcoal-muted dark:text-charcoal-darkMuted flex items-center justify-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-brand-600" />
-          <span>SaveWise LK • Owned by {APP_METADATA.owner}</span>
+        <div className="text-center text-[11px] text-charcoal-muted dark:text-charcoal-darkMuted">
+          <span>SaveWise LK • Student Setup</span>
         </div>
       </div>
 

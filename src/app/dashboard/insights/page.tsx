@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useAppStore } from "@/store/appStore";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardHeader } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { ExpensePieChart } from "@/components/charts/ExpensePieChart";
 import { IncomeExpenseBarChart, MonthlyBarData } from "@/components/charts/IncomeExpenseBarChart";
 import { MonthlyTrendChart, TrendPoint } from "@/components/charts/MonthlyTrendChart";
@@ -14,10 +15,13 @@ import {
 } from "@/lib/calculations";
 import { formatMonthDisplay, getAdjacentMonth } from "@/lib/dates";
 import { formatLKR } from "@/lib/currency";
-import { TrendingUp, AlertTriangle, CheckCircle2, Award, ArrowUpRight } from "lucide-react";
+import { FileSpreadsheet } from "lucide-react";
+import { downloadMonthlyReport } from "@/lib/monthlyReport";
 
 export default function InsightsPage() {
-  const { transactions, budgets, goals, selectedMonth } = useAppStore();
+  const { transactions, budgets, selectedMonth } = useAppStore();
+  const [isExportingReport, setIsExportingReport] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
 
   const totals = calculateMonthlyTotals(transactions, selectedMonth);
   const categories = calculateCategoryBreakdown(transactions, selectedMonth);
@@ -75,17 +79,55 @@ export default function InsightsPage() {
           { label: "Day 30", value: 0 },
         ];
 
+  const handleExportReport = async () => {
+    setIsExportingReport(true);
+    setReportError(null);
+    try {
+      await downloadMonthlyReport({
+        month: selectedMonth,
+        monthLabel: formatMonthDisplay(selectedMonth),
+        totals,
+        categories,
+        transactions: transactions.filter((transaction) =>
+          transaction.date.startsWith(selectedMonth)
+        ),
+      });
+    } catch (error) {
+      console.error("Failed to export monthly report", error);
+      setReportError("Could not create the Excel report. Please try again.");
+    } finally {
+      setIsExportingReport(false);
+    }
+  };
+
   return (
     <PageContainer>
       {/* Header */}
-      <div>
-        <h2 className="text-xl sm:text-2xl font-black text-charcoal dark:text-charcoal-dark tracking-tight">
-          Financial Analytics & Spending Insights
-        </h2>
-        <p className="text-xs sm:text-sm text-charcoal-muted dark:text-charcoal-darkMuted">
-          Visual insights and patterns for {formatMonthDisplay(selectedMonth)}
-        </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-black text-charcoal dark:text-charcoal-dark tracking-tight">
+            Financial Analytics & Spending Insights
+          </h2>
+          <p className="text-xs sm:text-sm text-charcoal-muted dark:text-charcoal-darkMuted">
+            Visual insights and patterns for {formatMonthDisplay(selectedMonth)}
+          </p>
+        </div>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={handleExportReport}
+          disabled={isExportingReport}
+        >
+          <FileSpreadsheet className="h-4 w-4" />
+          <span>{isExportingReport ? "Creating report..." : "Export to Excel"}</span>
+        </Button>
       </div>
+      {reportError && (
+        <p role="alert" className="text-sm font-medium text-danger">
+          {reportError}
+        </p>
+      )}
 
       {/* Highlights / Key Findings */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -21,14 +21,13 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
   const [isAddTxOpen, setIsAddTxOpen] = useState(false);
 
   const getPageTitle = () => {
-    if (pathname === "/dashboard") return "Financial Overview";
+    if (pathname === "/dashboard") return "Monthly Planner";
     if (pathname.includes("/transactions")) return "Transactions & Expenses";
     if (pathname.includes("/budgets")) return "Monthly Budget Planner";
     if (pathname.includes("/goals")) return "Savings Goals";
     if (pathname.includes("/challenges")) return "Savings Challenges";
     if (pathname.includes("/insights")) return "Analytics & Spending Insights";
     if (pathname.includes("/purchase-assistant")) return "Purchase Decision Assistant";
-    if (pathname.includes("/simulator")) return "What-If Savings Simulator";
     if (pathname.includes("/settings")) return "Settings & Preferences";
     return "Dashboard";
   };
@@ -43,9 +42,9 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
 
   return (
     <>
-      <header className="sticky top-0 z-20 bg-white/90 dark:bg-surface-darkCard/90 backdrop-blur-md border-b border-surface-border dark:border-surface-darkBorder px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
+      <header className="sticky top-0 z-20 flex flex-col gap-3 border-b border-surface-border bg-white/90 px-4 py-3.5 backdrop-blur-md dark:border-surface-darkBorder dark:bg-surface-darkCard/90 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-6">
         {/* Left: Mobile hamburger & Page Title */}
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <button
             onClick={onOpenMobileMenu}
             className="lg:hidden p-2 rounded-xl text-charcoal hover:bg-surface-light dark:text-charcoal-dark dark:hover:bg-surface-darkElevated border border-surface-border dark:border-surface-darkBorder"
@@ -54,7 +53,7 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
             <Menu className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-base sm:text-lg font-bold text-charcoal dark:text-charcoal-dark leading-tight">
+            <h1 className="truncate text-base font-bold leading-tight text-charcoal dark:text-charcoal-dark sm:text-lg">
               {getPageTitle()}
             </h1>
             <p className="text-[11px] text-charcoal-muted dark:text-charcoal-darkMuted hidden sm:block">
@@ -64,7 +63,7 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
         </div>
 
         {/* Right: Month Selector + Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-3">
           {/* Month Navigator */}
           <div className="flex items-center bg-surface-light dark:bg-surface-darkElevated border border-surface-border dark:border-surface-darkBorder rounded-xl p-0.5 shadow-sm">
             <button
@@ -98,6 +97,8 @@ export function AppHeader({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void 
             variant="primary"
             onClick={() => setIsAddTxOpen(true)}
             className="shadow-sm"
+            aria-label="Add record"
+            title="Add record"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden md:inline">Add Record</span>

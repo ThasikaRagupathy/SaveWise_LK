@@ -9,7 +9,7 @@ import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { formatLKR } from "@/lib/currency";
 import { calculatePurchaseImpact, calculateMonthlyTotals } from "@/lib/calculations";
-import { Calculator, ArrowRight, AlertCircle, CheckCircle, HelpCircle, Sparkles } from "lucide-react";
+import { Calculator, ArrowRight, AlertCircle, CheckCircle, HelpCircle, TrendingUp } from "lucide-react";
 
 export default function PurchaseAssistantPage() {
   const { goals, transactions, selectedMonth } = useAppStore();
@@ -99,7 +99,7 @@ export default function PurchaseAssistantPage() {
               <CardHeader
                 title={
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+                    <TrendingUp className="w-5 h-5 text-brand-600 dark:text-brand-400" />
                     <span>Impact Analysis & Opportunity Cost</span>
                   </div>
                 }

@@ -11,7 +11,7 @@ import { calculateBudgetStatuses } from "@/lib/calculations";
 import { formatMonthDisplay } from "@/lib/dates";
 import { formatLKR } from "@/lib/currency";
 import { Budget } from "@/types";
-import { PieChart, Plus, ShieldCheck, AlertCircle, Sparkles } from "lucide-react";
+import { PieChart, Plus, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 
 export default function BudgetsPage() {
@@ -110,7 +110,7 @@ export default function BudgetsPage() {
         <EmptyState
           icon={PieChart}
           title="No category budgets configured"
-          description="Create spending caps for food, transit, boarding, or outings to keep student life stress-free."
+          description="Set limits for food, transport, housing, supplies, or activities."
           actionLabel="Create Budget"
           onAction={() => setIsAddOpen(true)}
         />

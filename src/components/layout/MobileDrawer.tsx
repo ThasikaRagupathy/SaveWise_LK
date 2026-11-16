@@ -2,13 +2,14 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { X, Sparkles, ShieldCheck } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut, X } from "lucide-react";
 import { NAV_ITEMS } from "./AppSidebar";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useAppStore } from "@/store/appStore";
 import { APP_METADATA } from "@/lib/constants";
+import { BrandMark } from "@/components/brand/BrandMark";
 
 export function MobileDrawer({
   isOpen,
@@ -18,7 +19,8 @@ export function MobileDrawer({
   onClose: () => void;
 }) {
   const pathname = usePathname();
-  const { profile } = useAppStore();
+  const router = useRouter();
+  const { profile, logout } = useAppStore();
 
   if (!isOpen) return null;
 
@@ -36,9 +38,7 @@ export function MobileDrawer({
         {/* Drawer Header */}
         <div className="p-4 border-b border-surface-border dark:border-surface-darkBorder flex items-center justify-between">
           <Link href="/dashboard" onClick={onClose} className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-brand-600 dark:bg-brand-500 flex items-center justify-center text-white">
-              <Sparkles className="w-4 h-4 text-emerald-200" />
-            </div>
+            <BrandMark className="w-8 h-8 shrink-0" />
             <span className="font-extrabold text-base text-charcoal dark:text-charcoal-dark">
               SaveWise LK
             </span>
@@ -100,9 +100,21 @@ export function MobileDrawer({
             <ThemeToggle showLabel />
           </div>
 
-          <div className="pt-2 border-t border-surface-border/60 dark:border-surface-darkBorder/60 text-center text-[10px] text-charcoal-muted dark:text-charcoal-darkMuted flex items-center justify-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-brand-600" />
-            <span>Owned by {APP_METADATA.owner}</span>
+          <button
+            type="button"
+            onClick={() => {
+              logout();
+              onClose();
+              router.replace("/login");
+            }}
+            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-charcoal-muted transition-colors hover:bg-surface-light hover:text-charcoal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-charcoal-darkMuted dark:hover:bg-surface-darkElevated dark:hover:text-charcoal-dark"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>Switch account</span>
+          </button>
+
+          <div className="pt-2 border-t border-surface-border/60 dark:border-surface-darkBorder/60 text-center text-[10px] text-charcoal-muted dark:text-charcoal-darkMuted">
+            <span>SaveWise LK • Sri Lanka Student Edition</span>
           </div>
         </div>
       </div>

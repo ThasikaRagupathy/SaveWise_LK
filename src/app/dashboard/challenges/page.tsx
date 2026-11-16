@@ -7,7 +7,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { formatLKR } from "@/lib/currency";
-import { Trophy, Zap, Award, Flame, CheckCircle, RotateCcw, Plus, Sparkles } from "lucide-react";
+import { Trophy, Zap, Award, Flame, CheckCircle, RotateCcw, Plus } from "lucide-react";
 import { SavingsChallenge } from "@/types";
 
 export default function ChallengesPage() {
@@ -39,7 +39,7 @@ export default function ChallengesPage() {
             Savings Challenges & Streaks
           </h2>
           <p className="text-xs sm:text-sm text-charcoal-muted dark:text-charcoal-darkMuted">
-            Gamified micro-habits designed to build student financial resilience without stress
+            Simple saving habits for students at school, university, and beyond
           </p>
         </div>
 
@@ -149,7 +149,7 @@ export default function ChallengesPage() {
                   </div>
                 ) : (
                   <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4" />
+                    <CheckCircle className="w-4 h-4" />
                     <span>Completed! Badge Unlocked</span>
                   </span>
                 )}
@@ -165,10 +165,10 @@ export default function ChallengesPage() {
           <Award className="w-5 h-5 text-brand-600 dark:text-brand-400 shrink-0 mt-0.5" />
           <div className="text-xs space-y-1">
             <h4 className="font-bold text-brand-900 dark:text-brand-200">
-              Guilt-Free Student Habits
+              Flexible Saving Habits
             </h4>
             <p className="text-brand-800/80 dark:text-brand-300 leading-relaxed">
-              University life has fluctuating study schedules and exams. If you missed a day, never worry—SaveWise LK never penalizes or resets your progress without your consent. Small, consistent actions beat perfection every time.
+              School, university, and work schedules can change. Missed a day? Your progress will not reset unless you choose to restart. Small steps matter more than perfect streaks.
             </p>
           </div>
         </div>

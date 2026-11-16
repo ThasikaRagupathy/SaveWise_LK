@@ -1,36 +1,28 @@
 "use client";
 
-import React, { useState } from "react";
 import Link from "next/link";
 import {
-  Sparkles,
   ArrowRight,
-  ShieldCheck,
   CheckCircle2,
   Wallet,
   Target,
   PieChart,
   Calculator,
   Trophy,
-  Sliders,
-  ChevronRight,
-  TrendingUp,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { APP_METADATA } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
+import { BrandMark } from "@/components/brand/BrandMark";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-surface-light dark:bg-surface-dark text-charcoal dark:text-charcoal-dark selection:bg-brand-500/20">
+    <div className="min-h-dvh bg-surface-light dark:bg-surface-dark text-charcoal dark:text-charcoal-dark selection:bg-brand-500/20">
       {/* Top Navigation */}
       <header className="sticky top-0 z-40 bg-white/80 dark:bg-surface-darkCard/80 backdrop-blur-md border-b border-surface-border dark:border-surface-darkBorder">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-brand-600 dark:bg-brand-500 flex items-center justify-center text-white shadow-md shadow-brand-600/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5 text-emerald-200" />
-            </div>
+            <BrandMark className="w-10 h-10 shrink-0 transition-transform group-hover:scale-105" />
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-extrabold text-lg text-charcoal dark:text-charcoal-dark tracking-tight">
@@ -47,27 +39,36 @@ export default function LandingPage() {
           </Link>
 
           {/* Navigation links */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-charcoal-muted dark:text-charcoal-darkMuted">
+          <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-charcoal-muted dark:text-charcoal-darkMuted">
             <a href="#features" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
               Features
             </a>
-            <a href="#how-it-works" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
-              How It Works
-            </a>
-            <a href="#preview" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
-              Interactive Preview
-            </a>
-            <Link href="/onboarding" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
-              Setup Wizard
-            </Link>
           </nav>
 
-          {/* Right Action */}
+          {/* Account Actions */}
           <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link href="/dashboard">
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
+            <Link
+              href="/login"
+              className="text-sm font-semibold text-charcoal-muted transition-colors hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-charcoal-darkMuted dark:hover:text-brand-400"
+            >
+              Log in
+            </Link>
+            <Link href="/register">
               <Button size="sm" variant="primary">
-                <span>Open Dashboard</span>
+                <span>Register</span>
+              </Button>
+            </Link>
+            <Link href="/dashboard" className="hidden sm:block">
+              <Button
+                size="sm"
+                variant="outline"
+                aria-label="Open dashboard"
+                title="Open dashboard"
+              >
+                <span className="hidden md:inline">Open Planner</span>
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
@@ -81,8 +82,8 @@ export default function LandingPage() {
           <div className="text-center max-w-3xl mx-auto space-y-6">
             {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 dark:bg-brand-950/60 border border-brand-200 dark:border-brand-800 text-brand-800 dark:text-brand-300 text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-              <span>Tailored for University Students in Sri Lanka</span>
+              <CheckCircle2 className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
+              <span>For school and university students in Sri Lanka</span>
             </div>
 
             {/* Main Headline */}
@@ -93,30 +94,22 @@ export default function LandingPage() {
 
             {/* Subtext */}
             <p className="text-base sm:text-lg text-charcoal-muted dark:text-charcoal-darkMuted leading-relaxed">
-              Navigate university life with financial clarity. Track canteen meals, boarding advances, Mahapola stipends, and freelance gigs in Sri Lankan Rupees (LKR)—without guilt or complex banking hurdles.
+              Manage pocket money, school supplies, and savings goals in Sri Lankan Rupees. No budgeting experience needed.
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-              <Link href="/dashboard" className="w-full sm:w-auto">
+              <Link href="/register" className="w-full sm:w-auto">
                 <Button size="lg" variant="primary" className="w-full sm:w-auto shadow-md">
-                  <span>Start Saving Now (Free Demo)</span>
+                  <span>Create Your Account</span>
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
-              <Link href="/onboarding" className="w-full sm:w-auto">
+              <a href="#how-it-works" className="w-full sm:w-auto">
                 <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-                  <span>4-Step Setup Wizard</span>
+                  <span>How It Works</span>
                 </Button>
-              </Link>
-            </div>
-
-            {/* Ownership Attribution Banner */}
-            <div className="pt-6 flex items-center justify-center gap-2 text-xs text-charcoal-muted dark:text-charcoal-darkMuted">
-              <ShieldCheck className="w-4 h-4 text-brand-600 dark:text-brand-400" />
-              <span>
-                Engineered with dedication by <strong className="text-charcoal dark:text-charcoal-dark">{APP_METADATA.owner}</strong>
-              </span>
+              </a>
             </div>
           </div>
         </div>
@@ -127,10 +120,10 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <h2 className="text-2xl sm:text-3xl font-black text-charcoal dark:text-charcoal-dark">
-              Purpose-Built for Sri Lankan Student Needs
+              Made for Student Life
             </h2>
             <p className="text-xs sm:text-sm text-charcoal-muted dark:text-charcoal-darkMuted">
-              Every tool and calculator is crafted around real student budgeting scenarios
+              Plan everyday spending, income, and savings at school, university, or beyond.
             </p>
           </div>
 
@@ -140,21 +133,21 @@ export default function LandingPage() {
                 icon: Wallet,
                 title: "Income & Expense Tracking",
                 description:
-                  "Effortlessly record boarding fees, canteen meals, train passes, and family allowances in LKR with quick filters and instant recalculations.",
+                  "Record pocket money, allowances, school supplies, snacks, and transport in LKR.",
                 link: "/dashboard/transactions",
               },
               {
                 icon: PieChart,
                 title: "Category Budget Planner",
                 description:
-                  "Set realistic limits for food, outings, and study materials. Visual progress rings gently alert you at 80% before you run dry.",
+                  "Set simple spending limits for food, transport, supplies, or activities. Get a heads-up when you are close to a limit.",
                 link: "/dashboard/budgets",
               },
               {
                 icon: Target,
                 title: "Goal Tracker & Confetti",
                 description:
-                  "Accumulate funds for coding laptops, semester fees, or emergency reserves with automated weekly pace targets and celebratory milestones.",
+                  "Save toward books, supplies, a device, a trip, or an emergency fund at your own pace.",
                 link: "/dashboard/goals",
               },
               {
@@ -163,13 +156,6 @@ export default function LandingPage() {
                 description:
                   "Calculate the true opportunity cost before buying sneakers or gear. See how many weeks it delays your primary savings goal.",
                 link: "/dashboard/purchase-assistant",
-              },
-              {
-                icon: Sliders,
-                title: "What-If Savings Simulator",
-                description:
-                  "Slide weekly deposit amounts and monthly coffee cuts to forecast your semester cash reserves over 3 to 24 months.",
-                link: "/dashboard/simulator",
               },
               {
                 icon: Trophy,
@@ -218,18 +204,18 @@ export default function LandingPage() {
             {[
               {
                 step: "01",
-                title: "Log Your Monthly Inflow",
-                desc: "Enter your family allowance, Mahapola bursary, or tutoring income. Set your baseline with no pressure.",
+                title: "Track Your Income",
+                desc: "Record pocket money, family support, work, scholarships, or other money you receive.",
               },
               {
                 step: "02",
-                title: "Track Canteen & Daily Spend",
-                desc: "Record expenses in seconds from your mobile phone or laptop. Watch category budgets update immediately.",
+                title: "Track Everyday Spending",
+                desc: "Record costs like supplies, snacks, transport, and activities. Budgets update as you go.",
               },
               {
                 step: "03",
-                title: "Reach Your Dreams",
-                desc: "Allocate savings towards a target laptop or trip. Experience peace of mind throughout your semester.",
+                title: "Save for a Goal",
+                desc: "Set aside money toward a device, education, a trip, or anything else that matters to you.",
               },
             ].map((s, idx) => (
               <div
@@ -251,34 +237,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Interactive Dashboard Preview Banner */}
-      <section id="preview" className="py-16 bg-gradient-to-b from-brand-50/50 to-white dark:from-surface-darkElevated/40 dark:to-surface-dark border-t border-surface-border dark:border-surface-darkBorder">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          <div className="space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-black text-charcoal dark:text-charcoal-dark">
-              Ready to take charge of your student finances?
-            </h2>
-            <p className="text-xs sm:text-sm text-charcoal-muted dark:text-charcoal-darkMuted max-w-xl mx-auto">
-              Open the interactive demo loaded with realistic sample data for university students in Colombo, Moratuwa, and across Sri Lanka.
-            </p>
-          </div>
-
-          <div className="flex items-center justify-center gap-3">
-            <Link href="/dashboard">
-              <Button size="lg" variant="primary">
-                <span>Launch Full App</span>
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button size="lg" variant="secondary">
-                <span>Demo Sign In</span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="py-10 border-t border-surface-border dark:border-surface-darkBorder bg-white dark:bg-surface-darkCard text-xs text-charcoal-muted dark:text-charcoal-darkMuted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -290,11 +248,6 @@ export default function LandingPage() {
               SaveWise LK
             </span>
             <span>• Student Savings & Budgeting Suite</span>
-          </div>
-
-          <div className="flex items-center gap-1 font-semibold text-charcoal dark:text-charcoal-dark">
-            <ShieldCheck className="w-4 h-4 text-brand-600 dark:text-brand-400" />
-            <span>Owned and Created by {APP_METADATA.owner}</span>
           </div>
 
           <div>

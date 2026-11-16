@@ -11,30 +11,34 @@ export const EXPENSE_CATEGORIES = [
 ];
 
 export const INCOME_CATEGORIES = [
-  { id: "Allowance", label: "Monthly Allowance / Family", icon: "HeartHandshake", color: "#176B4D" },
+  { id: "Allowance", label: "Allowance / Pocket Money", icon: "HeartHandshake", color: "#176B4D" },
   { id: "Part-time Job", label: "Part-time Job / Tutoring", icon: "Briefcase", color: "#2563EB" },
   { id: "Freelance", label: "Freelance Project / Gig", icon: "Laptop", color: "#7C3AED" },
-  { id: "Scholarship", label: "Mahapola / Bursary / Grant", icon: "Award", color: "#D97706" },
+  { id: "Scholarship", label: "Scholarship / Bursary / Grant", icon: "Award", color: "#D97706" },
   { id: "Other Income", label: "Gifts / Other Income", icon: "Coins", color: "#059669" },
 ];
 
 export const GOAL_CATEGORIES = [
   { id: "Tech & Devices", label: "Laptop / Tech Gear", icon: "Laptop" },
-  { id: "Study Materials", label: "Course Fees / Books", icon: "BookOpen" },
-  { id: "Emergency Fund", label: "Student Emergency Safety Net", icon: "ShieldCheck" },
-  { id: "Boarding & Deposit", label: "Boarding Advance / Rental", icon: "Home" },
-  { id: "Travel & Trip", label: "University Trip / Travel", icon: "Compass" },
-  { id: "Personal", label: "Personal Goal", icon: "Sparkles" },
+  { id: "Study Materials", label: "Books / Courses / Supplies", icon: "BookOpen" },
+  { id: "Emergency Fund", label: "Emergency Fund", icon: "ShieldCheck" },
+  { id: "Boarding & Deposit", label: "Housing / Deposit", icon: "Home" },
+  { id: "Travel & Trip", label: "Travel / Trip", icon: "Compass" },
+  { id: "Personal", label: "Personal Goal", icon: "Flag" },
 ];
 
 export const APP_METADATA = {
   name: "SaveWise LK",
   tagline: "Save smarter. Spend wiser. Build your future.",
-  description: "Student-focused personal savings and budgeting web app for university students in Sri Lanka.",
+  description: "Personal savings and budgeting for school and university students in Sri Lanka.",
   currency: "LKR",
   currencySymbol: "Rs.",
-  owner: "Thasika Ragupathy",
-  version: "1.0.0 (Prototype)",
+  version: "1.0.0",
+  educationLevels: [
+    { id: "school", label: "School student" },
+    { id: "university", label: "University / college student" },
+    { id: "other", label: "Other student" },
+  ],
   universityOptions: [
     "University of Colombo",
     "University of Peradeniya",
@@ -43,6 +47,7 @@ export const APP_METADATA = {
     "University of Kelaniya",
     "University of Jaffna",
     "University of Ruhuna",
+    "University of Vavuniya",
     "Eastern University, Sri Lanka",
     "SLIIT",
     "NSBM Green University",

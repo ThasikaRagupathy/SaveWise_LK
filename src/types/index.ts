@@ -40,10 +40,15 @@ export interface Budget {
   month: string; // YYYY-MM
 }
 
+export type EducationLevel = "school" | "university" | "other";
+
 export interface UserProfile {
   id: string;
   displayName: string;
   email?: string;
+  educationLevel?: EducationLevel;
+  institutionName?: string;
+  // Legacy fields are retained so existing browser profiles and backups still load.
   university?: string;
   faculty?: string;
   currency: "LKR";
@@ -68,6 +73,18 @@ export interface SavingsChallenge {
   status: ChallengeStatus;
   type: ChallengeType;
   category?: string;
+}
+
+export type PlannerItemType = "reminder" | "bill";
+
+export interface PlannerItem {
+  id: string;
+  type: PlannerItemType;
+  title: string;
+  date: string;
+  amount?: number;
+  completed: boolean;
+  createdAt: string;
 }
 
 export type ThemeMode = "light" | "dark" | "system";

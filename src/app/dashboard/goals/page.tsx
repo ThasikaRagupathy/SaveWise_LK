@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SavingsGoal, GoalStatus } from "@/types";
 import { formatLKR } from "@/lib/currency";
-import { Target, Plus, CheckCircle, Sparkles, TrendingUp } from "lucide-react";
+import { Target, Plus, CheckCircle, Wallet, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 
 export default function GoalsPage() {
@@ -40,7 +40,7 @@ export default function GoalsPage() {
             Savings Goals
           </h2>
           <p className="text-xs sm:text-sm text-charcoal-muted dark:text-charcoal-darkMuted">
-            Plan, accumulate, and achieve your university & tech milestones step-by-step
+            Plan and save toward the things that matter to you
           </p>
         </div>
 
@@ -54,7 +54,7 @@ export default function GoalsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card hoverEffect className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 flex items-center justify-center shrink-0">
-            <Sparkles className="w-5 h-5" />
+            <Wallet className="w-5 h-5" />
           </div>
           <div>
             <span className="text-xs text-charcoal-muted dark:text-charcoal-darkMuted uppercase font-semibold">
@@ -124,7 +124,7 @@ export default function GoalsPage() {
           description={
             activeTab === "completed"
               ? "You haven't completed any goals yet. Keep contributing consistently!"
-              : "Set up a target for your dream laptop, university course, or emergency buffer."
+              : "Create a goal for books, supplies, a device, a trip, or an emergency fund."
           }
           actionLabel="Create Savings Goal"
           onAction={() => setIsAddOpen(true)}

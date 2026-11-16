@@ -164,7 +164,7 @@ export function TransactionForm({
         </label>
         <textarea
           rows={2}
-          placeholder="Add context (e.g. Shared with 2 friends, semester discount)"
+          placeholder="Add context (e.g. shared purchase, group discount)"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           className="w-full px-3.5 py-2.5 rounded-xl text-sm bg-white dark:bg-surface-darkElevated text-charcoal dark:text-charcoal-dark placeholder:text-charcoal-light dark:placeholder:text-charcoal-darkMuted/60 border border-surface-border dark:border-surface-darkBorder focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:focus:border-brand-400 dark:focus:ring-brand-400/20 outline-none transition-all resize-none"

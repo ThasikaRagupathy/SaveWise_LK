@@ -15,15 +15,15 @@ export function SummaryCards({ totals, monthlyAllowanceEstimate }: SummaryCardsP
   const isNetPositive = totals.net >= 0;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {/* 1. Net for this month */}
-      <Card hoverEffect className="relative overflow-hidden">
+      <Card hoverEffect className="relative overflow-hidden p-3 sm:p-5">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs font-semibold text-charcoal-muted dark:text-charcoal-darkMuted uppercase tracking-wider">
               Net This Month
             </p>
-            <h3 className="text-2xl font-black text-charcoal dark:text-charcoal-dark font-mono mt-1">
+            <h3 className="text-base min-[400px]:text-lg sm:text-2xl font-black text-charcoal dark:text-charcoal-dark font-mono mt-1">
               {formatLKR(totals.net)}
             </h3>
           </div>
@@ -57,13 +57,13 @@ export function SummaryCards({ totals, monthlyAllowanceEstimate }: SummaryCardsP
       </Card>
 
       {/* 2. Total Recorded Income */}
-      <Card hoverEffect>
+      <Card hoverEffect className="p-3 sm:p-5">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs font-semibold text-charcoal-muted dark:text-charcoal-darkMuted uppercase tracking-wider">
               Total Inflow
             </p>
-            <h3 className="text-2xl font-black text-brand-600 dark:text-brand-400 font-mono mt-1">
+            <h3 className="text-base min-[400px]:text-lg sm:text-2xl font-black text-brand-600 dark:text-brand-400 font-mono mt-1">
               {formatLKR(totals.totalIncome)}
             </h3>
           </div>
@@ -82,13 +82,13 @@ export function SummaryCards({ totals, monthlyAllowanceEstimate }: SummaryCardsP
       </Card>
 
       {/* 3. Total Recorded Expenses */}
-      <Card hoverEffect>
+      <Card hoverEffect className="p-3 sm:p-5">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs font-semibold text-charcoal-muted dark:text-charcoal-darkMuted uppercase tracking-wider">
               Total Outflow
             </p>
-            <h3 className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono mt-1">
+            <h3 className="text-base min-[400px]:text-lg sm:text-2xl font-black text-rose-600 dark:text-rose-400 font-mono mt-1">
               {formatLKR(totals.totalExpenses)}
             </h3>
           </div>
@@ -109,13 +109,13 @@ export function SummaryCards({ totals, monthlyAllowanceEstimate }: SummaryCardsP
       </Card>
 
       {/* 4. Savings Rate */}
-      <Card hoverEffect>
+      <Card hoverEffect className="p-3 sm:p-5">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs font-semibold text-charcoal-muted dark:text-charcoal-darkMuted uppercase tracking-wider">
               Savings Rate
             </p>
-            <h3 className="text-2xl font-black text-charcoal dark:text-charcoal-dark font-mono mt-1">
+            <h3 className="text-base min-[400px]:text-lg sm:text-2xl font-black text-charcoal dark:text-charcoal-dark font-mono mt-1">
               {totals.savingsRate}%
             </h3>
           </div>
@@ -127,12 +127,12 @@ export function SummaryCards({ totals, monthlyAllowanceEstimate }: SummaryCardsP
         <div className="mt-3 text-xs text-charcoal-muted dark:text-charcoal-darkMuted">
           {totals.savingsRate >= 20 ? (
             <span className="text-emerald-600 dark:text-emerald-400 font-medium">
-              Excellent student discipline! 🌟
+              Strong savings rate
             </span>
           ) : totals.savingsRate > 0 ? (
-            <span>Consistent progress towards goals</span>
+            <span>Some income remains unspent</span>
           ) : (
-            <span>Focus on trimming non-essentials</span>
+            <span>No savings recorded this month</span>
           )}
         </div>
       </Card>

@@ -9,17 +9,168 @@ import {
   SavingsGoal,
   SavingsContribution,
   SavingsChallenge,
+  PlannerItem,
   ThemeMode,
 } from "@/types";
-import {
-  DEMO_PROFILE,
-  DEMO_TRANSACTIONS,
-  DEMO_BUDGETS,
-  DEMO_GOALS,
-  DEMO_CONTRIBUTIONS,
-  DEMO_CHALLENGES,
-} from "@/lib/demoData";
+import { SAVINGS_CHALLENGE_TEMPLATES } from "@/lib/challengeTemplates";
 import { getCurrentMonthKey } from "@/lib/dates";
+
+const EMPTY_PROFILE: UserProfile = {
+  id: "",
+  displayName: "",
+  currency: "LKR",
+  onboardingCompleted: false,
+};
+
+const SEEDED_RECORD_IDS = {
+  transactions: new Set([
+    "tx-inc-1",
+    "tx-inc-2",
+    "tx-inc-3",
+    "tx-exp-1",
+    "tx-exp-2",
+    "tx-exp-3",
+    "tx-exp-4",
+    "tx-exp-5",
+    "tx-exp-6",
+    "tx-exp-7",
+    "tx-exp-8",
+    "tx-exp-9",
+  ]),
+  budgets: new Set(["b-1", "b-2", "b-3", "b-4", "b-5", "b-6", "b-7"]),
+  goals: new Set(["g-1", "g-2", "g-3", "g-4"]),
+  contributions: new Set(["c-1", "c-2"]),
+};
+
+const LEGACY_CHALLENGE_AMOUNTS: Record<string, number> = {
+  "ch-1": 1500,
+  "ch-2": 2500,
+  "ch-3": 1200,
+  "ch-4": 18500,
+};
+
+interface AccountData {
+  profile: UserProfile;
+  transactions: Transaction[];
+  budgets: Budget[];
+  goals: SavingsGoal[];
+  contributions: SavingsContribution[];
+  challenges: SavingsChallenge[];
+  plannerItems: PlannerItem[];
+  selectedMonth: string;
+}
+
+function createChallengeState() {
+  return SAVINGS_CHALLENGE_TEMPLATES.map((challenge) => ({ ...challenge }));
+}
+
+function normalizeEmail(email?: string) {
+  return email?.trim().toLowerCase() || "";
+}
+
+function isLegacyDemoProfile(profile?: UserProfile) {
+  return (
+    profile?.id === "user-demo" ||
+    normalizeEmail(profile?.email) === "nila.student@campus.ac.lk"
+  );
+}
+
+function migrateProfile(profile?: UserProfile): UserProfile {
+  if (!profile) return EMPTY_PROFILE;
+  if (!isLegacyDemoProfile(profile)) return profile;
+
+  const isDefaultProfile = profile.displayName === "Nila Silva";
+  return {
+    ...profile,
+    id: `user-${Date.now()}`,
+    displayName: isDefaultProfile ? "" : profile.displayName,
+    email:
+      profile.email === "nila.student@campus.ac.lk" ? undefined : profile.email,
+    university:
+      profile.university === "University of Colombo" ? undefined : profile.university,
+    faculty:
+      profile.faculty === "Faculty of Computing & Information Systems"
+        ? undefined
+        : profile.faculty,
+    monthlyIncomeEstimate:
+      profile.monthlyIncomeEstimate === 45000
+        ? undefined
+        : profile.monthlyIncomeEstimate,
+    onboardingCompleted: isDefaultProfile ? false : profile.onboardingCompleted,
+    avatarUrl: profile.avatarUrl || undefined,
+  };
+}
+
+function withoutSeededRecords<T extends { id: string }>(
+  records: T[] | undefined,
+  seededIds: Set<string>
+) {
+  return Array.isArray(records)
+    ? records.filter((record) => !seededIds.has(record.id))
+    : [];
+}
+
+function migrateChallenges(challenges?: SavingsChallenge[]) {
+  if (!Array.isArray(challenges)) return createChallengeState();
+
+  return challenges.map((challenge) => {
+    if (challenge.currentAmount !== LEGACY_CHALLENGE_AMOUNTS[challenge.id]) {
+      return challenge;
+    }
+
+    return {
+      ...challenge,
+      currentAmount: 0,
+      daysRemaining: challenge.durationDays,
+      status: "active" as const,
+    };
+  });
+}
+
+function migrateAccountData(data: Partial<AccountData>): AccountData {
+  return {
+    profile: migrateProfile(data.profile),
+    transactions: withoutSeededRecords(data.transactions, SEEDED_RECORD_IDS.transactions),
+    budgets: withoutSeededRecords(data.budgets, SEEDED_RECORD_IDS.budgets),
+    goals: withoutSeededRecords(data.goals, SEEDED_RECORD_IDS.goals),
+    contributions: withoutSeededRecords(data.contributions, SEEDED_RECORD_IDS.contributions),
+    challenges: migrateChallenges(data.challenges),
+    plannerItems: Array.isArray(data.plannerItems) ? data.plannerItems : [],
+    selectedMonth: data.selectedMonth || getCurrentMonthKey(),
+  };
+}
+
+function getAccountData(state: AccountData): AccountData {
+  return {
+    profile: { ...state.profile },
+    transactions: state.transactions.map((transaction) => ({ ...transaction })),
+    budgets: state.budgets.map((budget) => ({ ...budget })),
+    goals: state.goals.map((goal) => ({ ...goal })),
+    contributions: state.contributions.map((contribution) => ({ ...contribution })),
+    challenges: state.challenges.map((challenge) => ({ ...challenge })),
+    plannerItems: state.plannerItems.map((item) => ({ ...item })),
+    selectedMonth: state.selectedMonth,
+  };
+}
+
+function createAccountData(displayName: string, email: string): AccountData {
+  return {
+    profile: {
+      id: `user-${Date.now()}`,
+      displayName,
+      email,
+      currency: "LKR",
+      onboardingCompleted: false,
+    },
+    transactions: [],
+    budgets: [],
+    goals: [],
+    contributions: [],
+    challenges: createChallengeState(),
+    plannerItems: [],
+    selectedMonth: getCurrentMonthKey(),
+  };
+}
 
 export interface AppState {
   // State
@@ -29,13 +180,19 @@ export interface AppState {
   goals: SavingsGoal[];
   contributions: SavingsContribution[];
   challenges: SavingsChallenge[];
+  plannerItems: PlannerItem[];
   theme: ThemeMode;
   selectedMonth: string;
   notificationsEnabled: boolean;
   hasHydrated: boolean;
+  accounts: Record<string, AccountData>;
+  activeAccountId: string | null;
+  isLoggedIn: boolean;
 
   // Actions
   setHasHydrated: (val: boolean) => void;
+  signIn: (credentials: { displayName: string; email: string }) => boolean;
+  logout: () => void;
   setTheme: (theme: ThemeMode) => void;
   setSelectedMonth: (month: string) => void;
   setNotificationsEnabled: (enabled: boolean) => void;
@@ -59,12 +216,16 @@ export interface AppState {
   deleteGoal: (id: string) => void;
   addContribution: (goalId: string, amount: number, note?: string) => void;
 
+  // Planner
+  addPlannerItem: (item: Omit<PlannerItem, "id" | "completed" | "createdAt">) => void;
+  togglePlannerItem: (id: string) => void;
+  deletePlannerItem: (id: string) => void;
+
   // Challenges
   toggleChallengeProgress: (id: string, deltaAmount: number) => void;
   resetChallenge: (id: string) => void;
 
   // Management
-  resetToDemoData: () => void;
   clearAllUserData: () => void;
   exportJSON: () => string;
   exportCSV: () => string;
@@ -76,18 +237,73 @@ const STORAGE_KEY = "savewise-lk:v1";
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      profile: DEMO_PROFILE,
-      transactions: DEMO_TRANSACTIONS,
-      budgets: DEMO_BUDGETS,
-      goals: DEMO_GOALS,
-      contributions: DEMO_CONTRIBUTIONS,
-      challenges: DEMO_CHALLENGES,
+      profile: EMPTY_PROFILE,
+      transactions: [],
+      budgets: [],
+      goals: [],
+      contributions: [],
+      challenges: createChallengeState(),
+      plannerItems: [],
       theme: "light",
       selectedMonth: getCurrentMonthKey(),
       notificationsEnabled: true,
       hasHydrated: false,
+      accounts: {},
+      activeAccountId: null,
+      isLoggedIn: false,
 
       setHasHydrated: (val) => set({ hasHydrated: val }),
+
+      signIn: ({ displayName, email }) => {
+        const normalizedEmail = normalizeEmail(email);
+        const normalizedName = displayName.trim();
+
+        if (!normalizedEmail || !normalizedName) return false;
+
+        set((state) => {
+          const currentAccountId =
+            state.activeAccountId || normalizeEmail(state.profile.email);
+          const accounts = { ...state.accounts };
+
+          if (currentAccountId) {
+            accounts[currentAccountId] = getAccountData(state);
+          }
+
+          const storedAccount = accounts[normalizedEmail];
+          const account = storedAccount
+            ? { ...storedAccount, plannerItems: storedAccount.plannerItems || [] }
+            : createAccountData(normalizedName, email.trim());
+
+          return {
+            ...account,
+            profile: {
+              ...account.profile,
+              displayName: normalizedName,
+              email: email.trim(),
+            },
+            accounts,
+            activeAccountId: normalizedEmail,
+            isLoggedIn: true,
+          };
+        });
+
+        return true;
+      },
+
+      logout: () =>
+        set((state) => {
+          const currentAccountId =
+            state.activeAccountId || normalizeEmail(state.profile.email);
+          const accounts = currentAccountId
+            ? { ...state.accounts, [currentAccountId]: getAccountData(state) }
+            : state.accounts;
+
+          return {
+            accounts,
+            activeAccountId: currentAccountId || null,
+            isLoggedIn: false,
+          };
+        }),
 
       setTheme: (theme) => {
         set({ theme });
@@ -248,6 +464,30 @@ export const useAppStore = create<AppState>()(
         });
       },
 
+      addPlannerItem: (item) => {
+        const newItem: PlannerItem = {
+          ...item,
+          id: `planner-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          completed: false,
+          createdAt: new Date().toISOString(),
+        };
+        set((state) => ({
+          plannerItems: [newItem, ...state.plannerItems],
+        }));
+      },
+
+      togglePlannerItem: (id) =>
+        set((state) => ({
+          plannerItems: state.plannerItems.map((item) =>
+            item.id === id ? { ...item, completed: !item.completed } : item
+          ),
+        })),
+
+      deletePlannerItem: (id) =>
+        set((state) => ({
+          plannerItems: state.plannerItems.filter((item) => item.id !== id),
+        })),
+
       toggleChallengeProgress: (id, deltaAmount) =>
         set((state) => ({
           challenges: state.challenges.map((ch) => {
@@ -269,30 +509,14 @@ export const useAppStore = create<AppState>()(
           ),
         })),
 
-      resetToDemoData: () =>
-        set({
-          profile: DEMO_PROFILE,
-          transactions: DEMO_TRANSACTIONS,
-          budgets: DEMO_BUDGETS,
-          goals: DEMO_GOALS,
-          contributions: DEMO_CONTRIBUTIONS,
-          challenges: DEMO_CHALLENGES,
-          selectedMonth: getCurrentMonthKey(),
-        }),
-
       clearAllUserData: () =>
         set({
-          profile: {
-            id: `user-${Date.now()}`,
-            displayName: "New Student",
-            currency: "LKR",
-            onboardingCompleted: false,
-          },
           transactions: [],
           budgets: [],
           goals: [],
           contributions: [],
-          challenges: DEMO_CHALLENGES.map((c) => ({ ...c, currentAmount: 0, status: "active" })),
+          challenges: createChallengeState(),
+          plannerItems: [],
         }),
 
       exportJSON: () => {
@@ -300,13 +524,13 @@ export const useAppStore = create<AppState>()(
         const exportObj = {
           version: "1.0.0",
           exportedAt: new Date().toISOString(),
-          owner: "Thasika Ragupathy",
           profile: state.profile,
           transactions: state.transactions,
           budgets: state.budgets,
           goals: state.goals,
           contributions: state.contributions,
           challenges: state.challenges,
+          plannerItems: state.plannerItems,
         };
         return JSON.stringify(exportObj, null, 2);
       },
@@ -337,6 +561,9 @@ export const useAppStore = create<AppState>()(
               goals: parsed.goals || state.goals,
               contributions: parsed.contributions || state.contributions,
               challenges: parsed.challenges || state.challenges,
+              plannerItems: Array.isArray(parsed.plannerItems)
+                ? parsed.plannerItems
+                : state.plannerItems,
             }));
             return true;
           }
@@ -348,6 +575,47 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: STORAGE_KEY,
+      version: 1,
+      migrate: (persistedState, version) => {
+        if (version >= 1) return persistedState as AppState;
+
+        const state = persistedState as Partial<AppState> & Partial<AccountData>;
+        const accounts = Object.fromEntries(
+          Object.entries(state.accounts || {}).map(([accountId, account]) => [
+            accountId,
+            migrateAccountData(account),
+          ])
+        ) as Record<string, AccountData>;
+        const migratedActiveAccount = migrateAccountData(state);
+
+        if (isLegacyDemoProfile(state.profile)) {
+          const previousAccountId = normalizeEmail(state.profile?.email);
+          if (previousAccountId) {
+            accounts[previousAccountId] = migratedActiveAccount;
+          }
+
+          return {
+            ...state,
+            profile: EMPTY_PROFILE,
+            transactions: [],
+            budgets: [],
+            goals: [],
+            contributions: [],
+            challenges: createChallengeState(),
+            plannerItems: [],
+            selectedMonth: getCurrentMonthKey(),
+            accounts,
+            activeAccountId: null,
+            isLoggedIn: false,
+          } as AppState;
+        }
+
+        return {
+          ...state,
+          ...migratedActiveAccount,
+          accounts,
+        } as AppState;
+      },
       storage: createJSONStorage(() => (typeof window !== "undefined" ? localStorage : (null as any))),
       onRehydrateStorage: () => (state) => {
         if (state) {

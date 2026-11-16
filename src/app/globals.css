@@ -41,3 +41,7 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-charcoal-light dark:bg-charcoal-darkMuted;
 }
+
+.safe-bottom {
+  padding-bottom: calc(0.375rem + env(safe-area-inset-bottom, 0px));
+}

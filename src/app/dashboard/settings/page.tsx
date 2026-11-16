@@ -8,13 +8,13 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { EducationLevel } from "@/types";
 import { APP_METADATA } from "@/lib/constants";
 import {
   User,
   Palette,
   Bell,
   Download,
-  RotateCcw,
   ShieldCheck,
   CheckCircle2,
   Trash2,
@@ -30,29 +30,34 @@ export default function SettingsPage() {
     setTheme,
     notificationsEnabled,
     setNotificationsEnabled,
-    resetToDemoData,
     clearAllUserData,
     exportJSON,
     exportCSV,
   } = useAppStore();
 
   const [displayName, setDisplayName] = useState(profile.displayName);
-  const [email, setEmail] = useState(profile.email || "");
-  const [university, setUniversity] = useState(profile.university || APP_METADATA.universityOptions[0]);
+  const [educationLevel, setEducationLevel] = useState<EducationLevel | "">(
+    profile.educationLevel ||
+      (profile.institutionName || profile.university ? "university" : "")
+  );
+  const [institutionName, setInstitutionName] = useState(
+    profile.institutionName || profile.university || ""
+  );
   const [incomeEstimate, setIncomeEstimate] = useState(
     profile.monthlyIncomeEstimate ? String(profile.monthlyIncomeEstimate) : ""
   );
 
   const [savedSuccess, setSavedSuccess] = useState(false);
-  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
     updateProfile({
       displayName: displayName.trim(),
-      email: email.trim() || undefined,
-      university,
+      educationLevel: educationLevel || undefined,
+      institutionName: institutionName.trim() || undefined,
+      university: educationLevel === "university" ? institutionName : undefined,
+      faculty: undefined,
       monthlyIncomeEstimate: parseFloat(incomeEstimate) || undefined,
     });
     setSavedSuccess(true);
@@ -89,7 +94,7 @@ export default function SettingsPage() {
           Settings & Preferences
         </h2>
         <p className="text-xs sm:text-sm text-charcoal-muted dark:text-charcoal-darkMuted">
-          Customize your student profile, visual themes, data persistence, and export options
+          Customize your profile, appearance, and saved records
         </p>
       </div>
 
@@ -99,8 +104,8 @@ export default function SettingsPage() {
           {/* Profile Form */}
           <Card>
             <CardHeader
-              title="Student Profile"
-              subtitle="Personalize your university finance workspace"
+              title="Profile"
+              subtitle="Personalize your student finance workspace"
             />
 
             <form onSubmit={handleSaveProfile} className="space-y-4">
@@ -112,25 +117,50 @@ export default function SettingsPage() {
               />
 
               <Input
-                label="Student Email (Demo Only)"
+                label="Student Email"
                 type="email"
-                placeholder="name@student.ac.lk"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                hint="Used locally for demo identification. Never transmitted."
+                value={profile.email || ""}
+                readOnly
+                hint="This email identifies the local profile. Use Switch account to change users."
               />
 
               <Select
-                label="University / Institute"
-                value={university}
-                onChange={(e) => setUniversity(e.target.value)}
+                label="Education level"
+                value={educationLevel}
+                onChange={(e) => {
+                  const nextLevel = e.target.value as EducationLevel | "";
+                  if (nextLevel !== educationLevel) setInstitutionName("");
+                  setEducationLevel(nextLevel);
+                }}
               >
-                {APP_METADATA.universityOptions.map((uni) => (
-                  <option key={uni} value={uni}>
-                    {uni}
+                <option value="">Select an option</option>
+                {APP_METADATA.educationLevels.map((level) => (
+                  <option key={level.id} value={level.id}>
+                    {level.label}
                   </option>
                 ))}
               </Select>
+
+              {educationLevel === "university" ? (
+                <Select
+                  label="University / institute"
+                  value={institutionName}
+                  onChange={(e) => setInstitutionName(e.target.value)}
+                >
+                  <option value="">Select a university or institute</option>
+                  {APP_METADATA.universityOptions.map((universityOption) => (
+                    <option key={universityOption} value={universityOption}>
+                      {universityOption}
+                    </option>
+                  ))}
+                </Select>
+              ) : (
+                <Input
+                  label={educationLevel === "school" ? "School name" : "School or institution"}
+                  value={institutionName}
+                  onChange={(e) => setInstitutionName(e.target.value)}
+                />
+              )}
 
               <Input
                 label="Estimated Monthly Income / Allowance (LKR)"
@@ -202,7 +232,7 @@ export default function SettingsPage() {
           </Card>
         </div>
 
-        {/* Right Column (5 cols): Data Management & Prototype Ownership */}
+        {/* Right Column (5 cols): Data Management */}
         <div className="lg:col-span-5 space-y-6">
           {/* Data Export & Backup */}
           <Card>
@@ -234,24 +264,14 @@ export default function SettingsPage() {
             </div>
           </Card>
 
-          {/* Data Reset & Danger Zone */}
+          {/* Data Management */}
           <Card className="border-rose-200 dark:border-rose-900/50">
             <CardHeader
-              title="Demo Data & Danger Zone"
-              subtitle="Reset or start with a blank slate"
+              title="Data Management"
+              subtitle="Clear your financial records for this profile"
             />
 
             <div className="space-y-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start gap-2.5"
-                onClick={() => setIsResetConfirmOpen(true)}
-              >
-                <RotateCcw className="w-4 h-4 text-brand-600" />
-                <span>Reset to Sample Student Demo Data</span>
-              </Button>
-
               <Button
                 variant="danger"
                 size="sm"
@@ -259,7 +279,7 @@ export default function SettingsPage() {
                 onClick={() => setIsClearConfirmOpen(true)}
               >
                 <Trash2 className="w-4 h-4" />
-                <span>Clear All My Data (Start Fresh)</span>
+                <span>Clear Financial Records</span>
               </Button>
             </div>
           </Card>
@@ -277,12 +297,12 @@ export default function SettingsPage() {
                 <p className="text-charcoal/80 dark:text-charcoal-darkMuted leading-relaxed">
                   <strong>SaveWise LK</strong> is designed and developed with ownership by{" "}
                   <strong className="text-brand-700 dark:text-brand-300 font-semibold">
-                    {APP_METADATA.owner}
+                    {APP_METADATA.name}
                   </strong>
                   .
                 </p>
                 <p className="text-[11px] text-charcoal-muted dark:text-charcoal-darkMuted pt-1 border-t border-brand-200/40 dark:border-brand-800/40">
-                  Prototype Version {APP_METADATA.version}. Client-side storage is active locally on this browser session.
+                  Your profile and records are saved locally in this browser.
                 </p>
               </div>
             </div>
@@ -292,21 +312,11 @@ export default function SettingsPage() {
 
       {/* Confirmation Dialogs */}
       <ConfirmDialog
-        isOpen={isResetConfirmOpen}
-        onClose={() => setIsResetConfirmOpen(false)}
-        onConfirm={() => resetToDemoData()}
-        title="Reset to Sample Demo Data?"
-        message="This will reload the initial Sri Lankan student sample data (allowance, canteen expenses, dev laptop goal, Keells groceries, etc.). Any custom transactions you added will be replaced."
-        confirmText="Reset to Demo"
-        isDestructive={false}
-      />
-
-      <ConfirmDialog
         isOpen={isClearConfirmOpen}
         onClose={() => setIsClearConfirmOpen(false)}
         onConfirm={() => clearAllUserData()}
         title="Clear All Financial Records?"
-        message="This will permanently delete all transactions, category budgets, and savings goals on this browser. You can start completely blank."
+        message="This permanently deletes transactions, budgets, savings goals, contributions, planner items, and challenge progress for this profile. Your profile remains."
         confirmText="Clear All Data"
         isDestructive={true}
       />

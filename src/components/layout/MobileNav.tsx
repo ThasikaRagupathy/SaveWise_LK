@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
+  CalendarDays,
   Receipt,
   PieChart,
   Target,
@@ -16,14 +16,14 @@ export function MobileNav({ onOpenMenu }: { onOpenMenu: () => void }) {
   const pathname = usePathname();
 
   const links = [
-    { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+    { href: "/dashboard", label: "Planner", icon: CalendarDays },
     { href: "/dashboard/transactions", label: "Entries", icon: Receipt },
     { href: "/dashboard/budgets", label: "Budgets", icon: PieChart },
     { href: "/dashboard/goals", label: "Goals", icon: Target },
   ];
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-surface-darkCard/95 backdrop-blur-md border-t border-surface-border dark:border-surface-darkBorder py-1.5 px-3 flex items-center justify-around safe-bottom">
+    <div className="safe-bottom fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-surface-border bg-white/95 px-3 py-1.5 backdrop-blur-md dark:border-surface-darkBorder dark:bg-surface-darkCard/95 lg:hidden">
       {links.map((link) => {
         const isActive = pathname === link.href;
         const Icon = link.icon;

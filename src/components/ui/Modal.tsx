@@ -85,7 +85,7 @@ export function Modal({
           </button>
         </div>
 
-        <div className="p-5 max-h-[80vh] overflow-y-auto">{children}</div>
+        <div className="p-5 max-h-[80dvh] overflow-y-auto">{children}</div>
       </div>
     </div>
   );
